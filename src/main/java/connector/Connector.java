@@ -25,7 +25,7 @@ import user_interface.message_window;
  */
 public class Connector {
     
-    Configuration configuration;
+    public Configuration configuration;
     public boolean health;
     public Date ldt;
     public boolean error;
@@ -46,7 +46,7 @@ public class Connector {
      * @return String
      */
     public String url_builder(String url){
-        return "http://"+configuration.url+url;
+        return configuration.url+url;
     }
     
     /**
@@ -207,7 +207,15 @@ public class Connector {
      * @return JsonElement
      */
     public JsonElement get_drawer_item(int entrc_ic_item_id,String shelf,String app_code){
-        
+        try{
+            System.out.println("Loading item details...");
+            HttpResponse <JsonNode> response = response_creator("/entrcoordinator-item-details/"+app_code+"/"+shelf+"/"+entrc_ic_item_id);
+            JsonParser jp = new JsonParser();
+            return jp.parse(response.getBody().toString());
+        }catch(Exception e){
+            System.out.println("Failed to get item details ("+e.toString()+")");
+            return null;
+        }
     }
 
     

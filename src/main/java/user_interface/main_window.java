@@ -183,8 +183,8 @@ public class main_window extends javax.swing.JFrame {
                 default:
                     load_window_auth();
                     break;
-                           
             }
+            field_pin.setText("");
         }catch(NumberFormatException e){
             new message_window(this,true,"Błędny pin.","BŁĄD PIN");
         }catch(Exception e){
@@ -420,7 +420,16 @@ public class main_window extends javax.swing.JFrame {
             add_data(button_9);
         else{
             // button in mode ">"
-            
+            int row = table_content.getSelectedRow();
+            int column = 0;
+            try{
+                int entrc_ic_item_id = Integer.parseInt(table_content.getModel().getValueAt(row, column).toString().split(":")[1]);
+                System.out.println("Selected entrc_ic_item_id="+entrc_ic_item_id);
+                new item_manipulation_window(this,true,connector,entrc_ic_item_id);
+                load_window();
+            }catch(Exception e){
+                new message_window(this,true,"Failed to load item data","");
+            }
         }
     }//GEN-LAST:event_button_9ActionPerformed
 

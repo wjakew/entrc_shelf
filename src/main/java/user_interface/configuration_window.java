@@ -219,6 +219,7 @@ public class configuration_window extends javax.swing.JFrame {
                 // main window ready to connect
                 // ready to load drawer content
                 new main_window(connector,configuration);
+                dispose();
             } catch (UnirestException ex) {
                 new message_window(this,true,"Błąd\n"+ex.toString(),"Błąd aplikacji");
                 dispose();

@@ -6,6 +6,7 @@ all rights reserved
 package user_interface;
 
 import connector.Connector;
+import connector.Parser;
 
 /**
  *Window for item manipulation
@@ -17,11 +18,28 @@ public class item_manipulation_window extends javax.swing.JDialog {
      * Creates new form item_manipulation_window
      */
     Connector connector;
-    public item_manipulation_window(java.awt.Frame parent, boolean modal,Connector connector) {
+    int entrc_ic_item_id;
+    public item_manipulation_window(java.awt.Frame parent, boolean modal,Connector connector,int entrc_ic_item_id) {
         super(parent, modal);
         initComponents();
+        this.connector = connector;
+        this.entrc_ic_item_id = entrc_ic_item_id;
         this.setLocationRelativeTo(null);
+        load_window();
         setVisible(true);
+    }
+    
+    /**
+     * Function for loading window content
+     */
+    void load_window(){
+        try{
+            Parser item = new Parser(connector.get_drawer_item(entrc_ic_item_id, connector.configuration.entrc_ic_drawer_code, connector.configuration.apptoken));
+            label_name.setText(item.get_string("entrc_ic_item_name"));
+        }catch(Exception e){
+            new message_window(this,true,"Failed to load window\n"+e.toString(),"ERROR");
+            dispose();
+        }
     }
 
     /**
@@ -33,20 +51,20 @@ public class item_manipulation_window extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        label_name = new javax.swing.JLabel();
+        label_state = new javax.swing.JLabel();
+        button_action = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabel1.setFont(new java.awt.Font("sansserif", 0, 36)); // NOI18N
-        jLabel1.setText("ITEM_NAME");
+        label_name.setFont(new java.awt.Font("sansserif", 0, 36)); // NOI18N
+        label_name.setText("ITEM_NAME");
 
-        jLabel2.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
-        jLabel2.setText("STATE:");
+        label_state.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
+        label_state.setText("STATE:");
 
-        jButton1.setFont(new java.awt.Font("sansserif", 0, 18)); // NOI18N
-        jButton1.setText("ACTION");
+        button_action.setFont(new java.awt.Font("sansserif", 0, 18)); // NOI18N
+        button_action.setText("ACTION");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -55,24 +73,23 @@ public class item_manipulation_window extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(label_name, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
+                    .addComponent(label_state, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(button_action, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(15, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(38, 38, 38))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(26, Short.MAX_VALUE))
+                .addGap(27, 27, 27)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(button_action, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(label_name, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(35, 35, 35)
+                        .addComponent(label_state, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -80,8 +97,8 @@ public class item_manipulation_window extends javax.swing.JDialog {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JButton button_action;
+    private javax.swing.JLabel label_name;
+    private javax.swing.JLabel label_state;
     // End of variables declaration//GEN-END:variables
 }
