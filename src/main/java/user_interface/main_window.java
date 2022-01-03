@@ -107,6 +107,7 @@ public class main_window extends javax.swing.JFrame {
         button_8.setEnabled(true);
         button_9.setEnabled(true);
         field_pin.setEnabled(true);
+//        connector.worker_id = -1;
     }
     
     /**
@@ -182,6 +183,7 @@ public class main_window extends javax.swing.JFrame {
                     break;
                 default:
                     load_window_auth();
+                    connector.worker_id = parser.get_int("worker_id");
                     break;
             }
             field_pin.setText("");

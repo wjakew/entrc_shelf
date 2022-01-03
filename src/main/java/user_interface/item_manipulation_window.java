@@ -5,8 +5,11 @@ all rights reserved
  */
 package user_interface;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
 import connector.Connector;
 import connector.Parser;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *Window for item manipulation
@@ -36,6 +39,34 @@ public class item_manipulation_window extends javax.swing.JDialog {
         try{
             Parser item = new Parser(connector.get_drawer_item(entrc_ic_item_id, connector.configuration.entrc_ic_drawer_code, connector.configuration.apptoken));
             label_name.setText(item.get_string("entrc_ic_item_name"));
+            
+            //loading state
+            Parser status = new Parser(connector.get_item_status(entrc_ic_item_id, connector.configuration.entrc_ic_drawer_code, connector.configuration.apptoken));
+            
+            label_state.setText(status.get_string("item_get_code"));
+            
+            // item in shelf
+            if ( status.get_string("item_get_code").contains("item_shelf")){
+                button_action.setText("PODEJMIJ");
+            }
+            else if ( status.get_string("item_get_code").contains("item_taken")){
+                try{
+                    
+                    int worker_id = Integer.parseInt(status.get_string("item_get_code").split(":")[1]);
+                    
+                    if ( connector.worker_id == worker_id ){
+                        button_action.setText("ZDEJMIJ");
+                    }
+                    else{
+                        button_action.setText("BRAK");
+                        button_action.setEnabled(false);
+                    }
+                    
+                }catch(Exception e){
+                    
+                }
+            }
+            
         }catch(Exception e){
             new message_window(this,true,"Failed to load window\n"+e.toString(),"ERROR");
             dispose();
@@ -63,8 +94,13 @@ public class item_manipulation_window extends javax.swing.JDialog {
         label_state.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
         label_state.setText("STATE:");
 
-        button_action.setFont(new java.awt.Font("sansserif", 0, 18)); // NOI18N
+        button_action.setFont(new java.awt.Font("sansserif", 0, 36)); // NOI18N
         button_action.setText("ACTION");
+        button_action.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_actionActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -94,6 +130,71 @@ public class item_manipulation_window extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void button_actionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_actionActionPerformed
+        /**
+         * PODEJMIJ
+         * ZDEJMIJ
+         * BRAK
+         */
+        switch(button_action.getText()){
+            case "PODEJMIJ":
+            {
+                try {
+                    /**
+                        * 1. no_avaiable - item not in the shelf
+                        * 2. item_taken  - item taken by other user
+                        * 3. error       - error getting item
+                     */
+                    Parser parser = new Parser(connector.get_worker_item(entrc_ic_item_id, connector.worker_id, connector.configuration.entrc_ic_drawer_code));
+                    switch(parser.get_string("item_get_code")){
+                        case "no_avaiable":
+                            new message_window(this,true,"Przedmiot niedostępny do wzięcia","");
+                            break;
+                        case "item_taken":
+                            new message_window(this,true,"Przedmiot pobrany! Dopisano właściciela: "+connector.worker_id,"PRZYJĘCIE");
+                            break;
+                        case "error":
+                            new message_window(this,true,"Błąd podczas pobierania przedmiotu.\nSkontaktuj się z administratorem","");
+                            break;
+                    }
+                    dispose();
+                } catch (UnirestException ex) {
+                    new message_window(this,true,"Error\n"+ex.toString(),"ZMIANY ANULOWANE");
+                    dispose();
+                }
+                break;
+            }
+            case "ZDEJMIJ":
+            {
+                /*     
+                * 1. item_returned - item returned by user
+                * 2. error - error returning the item
+                * 3. no_item - item not found / no in state to be returned
+                */
+                try{
+                    Parser parser = new Parser(connector.return_worker_item(entrc_ic_item_id, connector.worker_id,connector.configuration.entrc_ic_drawer_code));
+                    switch(parser.get_string("item_get_code")){
+                        case "item_returned":
+                            new message_window(this,true,"Przedmiot zwrócony w systemie","ZWROT");
+                            break;
+                        case "error":
+                            new message_window(this,true,"Bład pobierania przedmiotu\n Skontaktuj się z administratorem","");
+                            break;
+                        case "no_item":
+                            new message_window(this,true,"Brak przedmiotu w szafce","");
+                            break;
+                            
+                    }
+                    dispose();
+                } catch (UnirestException ex) {
+                    new message_window(this,true,"Error\n"+ex.toString(),"ZMIANY ANULOWANE");
+                    dispose();
+                }
+                break;
+            }   
+        }
+    }//GEN-LAST:event_button_actionActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

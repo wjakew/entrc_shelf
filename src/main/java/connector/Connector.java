@@ -30,6 +30,7 @@ public class Connector {
     public Date ldt;
     public boolean error;
     public String version,bulid;
+    public int worker_id;
     /**
      * Constructor
      * @param oauth 
@@ -38,6 +39,7 @@ public class Connector {
         this.configuration = configuration;
         ldt = new Date();
         error = false;
+        worker_id = -1;
     }
     
     /**
@@ -209,11 +211,70 @@ public class Connector {
     public JsonElement get_drawer_item(int entrc_ic_item_id,String shelf,String app_code){
         try{
             System.out.println("Loading item details...");
-            HttpResponse <JsonNode> response = response_creator("/entrcoordinator-item-details/"+app_code+"/"+shelf+"/"+entrc_ic_item_id);
+            HttpResponse <JsonNode> response = response_creator("/entrcoordinator-item-details/"+shelf+"/"+app_code+"/"+entrc_ic_item_id);
             JsonParser jp = new JsonParser();
             return jp.parse(response.getBody().toString());
         }catch(Exception e){
             System.out.println("Failed to get item details ("+e.toString()+")");
+            return null;
+        }
+    }
+    
+    /**
+     * Function for getting item status
+     * @param entrc_ic_item_id
+     * @param shelf
+     * @param app_code
+     * @return JsonElement
+     */
+    public JsonElement get_item_status(int entrc_ic_item_id,String shelf,String app_code) throws UnirestException{
+        try{
+            System.out.println("Loading item status...");
+            HttpResponse <JsonNode> response = response_creator("/entrcoordinator-item-status/"+shelf+"/"+app_code+"/"+entrc_ic_item_id);
+            JsonParser jp = new JsonParser();
+            return jp.parse(response.getBody().toString());
+        }catch(Exception e){
+            System.out.println("Failed to get item status ("+e.toString()+")");
+            return null;
+        }
+    }
+    
+    /**
+     * Function for getting worker item
+     * @param item_id
+     * @param worker_id
+     * @param shelf
+     * @return JsonElement
+     * @throws UnirestException 
+     */
+    public JsonElement get_worker_item(int item_id,int worker_id,String shelf) throws UnirestException{
+        try{
+            System.out.println("Setting item new status...GET");
+            HttpResponse <JsonNode> response = response_creator("/entrcoordinator-getitem/"+shelf+"/"+configuration.apptoken+"/"+item_id+"/"+worker_id);
+            JsonParser jp = new JsonParser();
+            return jp.parse(response.getBody().toString());
+        }catch(Exception e){
+            System.out.println("Failed to get worker item ("+e.toString()+")");
+            return null;
+        }
+    }
+    
+    /**
+     * Function for returning worker item
+     * @param item_id
+     * @param worker_id
+     * @param shelf
+     * @return JsonElement
+     * @throws UnirestException 
+     */
+    public JsonElement return_worker_item(int item_id,int worker_id,String shelf) throws UnirestException{
+        try{
+            System.out.println("Setting item new status...RETURN");
+            HttpResponse<JsonNode> response = response_creator("/entrcoordinator-returnitem/"+shelf+"/"+item_id+"/"+worker_id);
+            JsonParser jp = new JsonParser();
+            return jp.parse(response.getBody().toString());
+        }catch(Exception e){
+            System.out.println("Failed to return worker item ("+e.toString()+")");
             return null;
         }
     }

@@ -17,7 +17,7 @@ import user_interface.configuration_window;
 public class Entrc_Shelf {
     
     public static String version = "v1.0.0";
-    public static String build_number = "ESHELF-181221REV1";
+    public static String build_number = "ESHELF-030122REV1";
     public static int debug = 0;
     
     

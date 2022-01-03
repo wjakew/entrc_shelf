@@ -5,6 +5,7 @@ all rights reserved
  */
 package com.jakubwawak.entrc_shelf;
 
+import ComConnect.ComConnect;
 import configuration.Configuration;
 import java.io.IOException;
 import user_interface.configuration_window;
@@ -24,11 +25,13 @@ public class Tests {
      * Function for running test
      */
     void run() throws IOException{
-        Configuration configuration = new Configuration();
-        configuration.look_for_file();
-        configuration.load_file();
-        configuration.show_glances();
-        new configuration_window(configuration);
+        //Configuration configuration = new Configuration();
+        //configuration.look_for_file();
+        //configuration.load_file();
+        //configuration.show_glances();
+        //new configuration_window(configuration);
+        ComConnect cc = new ComConnect();
+        cc.search_ports();
     }
     
 }
